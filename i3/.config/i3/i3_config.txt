@@ -1,0 +1,196 @@
+# ==============================================================================
+# i3wm Core Configuration - Tailored Minimalist Setup for TKL Keyboard
+# ==============================================================================
+
+# sudo pacman -S kitty rofi flameshot i3status dunst
+
+# Установка клавиши Mod (Mod4 = Клавиша Windows/Super)
+set $mod Mod4
+
+# Шрифт для заголовков окон (строгий, читаемый, без лишних засечек)
+font pango:JetBrains Mono 10
+
+# Использовать мышь с зажатым Mod для перетаскивания плавающих окон
+floating_modifier $mod
+
+# ==============================================================================
+# 1. Запуск основных приложений
+# ==============================================================================
+
+# Терминал по умолчанию (Kitty - высокая производительность на GPU)
+bindcode $mod+36 exec kitty
+
+# Быстрый запуск меню приложений (Rofi вместо устаревшего dmenu)
+bindsym $mod+d exec --no-startup-id rofi -show drun -theme minimalist
+
+# Быстрые скриншоты области экрана (Flameshot с копированием в буфер)
+bindsym $mod+F4 exec --no-startup-id flameshot gui
+
+# Убийство фокуса (закрыть текущее окно)
+bindsym $mod+Shift+q kill
+
+# ==============================================================================
+# 2. Навигация и перемещение окон (Адаптировано под TKL стрелки и HJKL)
+# ==============================================================================
+
+# Изменение фокуса между окнами (Vim-style)
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# Изменение фокуса между окнами (Физические стрелки на TKL)
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Перемещение окон (Vim-style)
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Перемещение окон (Физические стрелки на TKL)
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# ==============================================================================
+# 3. Управление разметкой (Layouts)
+# ==============================================================================
+
+# Разделение окон по горизонтали / вертикали
+bindsym $mod+b split h
+bindsym $mod+v split v
+
+# Переключение режимов отображения контейнера
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# Полноэкранный режим (Ultimate Focus Mode)
+bindsym $mod+f fullscreen toggle
+
+# Переключение режима окна: плавающее / тайлинговое
+bindsym $mod+Shift+space floating toggle
+
+# Переключение фокуса между плавающим и тайлинговым окном
+bindsym $mod+space focus mode_toggle
+
+# Переход к родительскому / дочернему контейнеру
+bindsym $mod+a focus parent
+# bindsym $mod+c focus child # Раскомментировать при необходимости глубокой вложенности
+
+# ==============================================================================
+# 4. Рабочие пространства (Workspaces)
+# ==============================================================================
+
+# Названия рабочих пространств (строгий цифровой вид)
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+
+# Переключение на рабочие пространства
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+
+# Перемещение активного окна на рабочее пространство
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+
+# ==============================================================================
+# 5. Управление мультимедиа и системными функциями (С фиксом уведомлений)
+# ==============================================================================
+
+# Изменение громкости (с отправкой системного уведомления о текущем уровне)
+bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q set -USR1 5%+
+bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q set -USR1 5%-
+bindsym XF86AudioMute exec --no-startup-id amixer -q set -USR1 toggle
+
+# Управление яркостью экрана (если применимо к монитору/ноутбуку)
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 10%-
+
+# ==============================================================================
+# 6. Системные команды i3wm
+# ==============================================================================
+
+# Перезагрузка конфигурации i3 (без перезапуска самой сессии)
+bindsym $mod+Shift+c reload
+
+# Полный перезапуск i3 на месте (полезно при обновлении стилей или баре)
+bindsym $mod+Shift+r restart
+
+# Выход из i3wm (Завершение сессии Linux)
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Вы действительно хотите выйти из i3?' -B 'Да, завершить сессию' 'i3-msg exit'"
+
+# ==============================================================================
+# 7. Режим изменения размера окон (Resize Mode)
+# ==============================================================================
+
+mode "resize" {
+        # Изменение размера с помощью HJKL
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
+
+        # Изменение размера с помощью стрелок TKL
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        # Выход из режима изменения размера
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+# ==============================================================================
+# 8. Эстетика: Строгая монохромная палитра окон (Minimal Dark)
+# ==============================================================================
+
+# Класс окна             Граница  Фон      Текст    Индикатор Направляющая
+client.focused          #222222  #1a1a1a  #ffffff  #444444   #292929
+client.focused_inactive #151515  #151515  #888888  #151515   #151515
+client.unfocused        #101010  #101010  #555555  #101010   #101010
+client.urgent           #331111  #331111  #ffffff  #331111   #331111
+client.placeholder      #000000  #0c0c0c  #ffffff  #000000   #0c0c0c
+
+client.background       #0a0a0a
+
+# ==============================================================================
+# 9. Системный статус-бар
+# ==============================================================================
+
+bar {
+        status_command i3status
+        position bottom
+        colors {
+                background #101010
+                statusline #ffffff
+                separator  #333333
+
+                #                  Граница  Фон      Текст
+                focused_workspace  #222222  #1a1a1a  #ffffff
+                active_workspace   #151515  #151515  #888888
+                inactive_workspace #101010  #101010  #555555
+                urgent_workspace   #331111  #331111  #ffffff
+        }
+}
