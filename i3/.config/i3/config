@@ -2,13 +2,27 @@
 # i3wm Core Configuration - Tailored Minimalist Setup for TKL Keyboard
 # ==============================================================================
 
-# sudo pacman -S kitty rofi flameshot i3status dunst xorg-xset blueman
+# sudo pacman -S i3status dunst xorg-xset xclip maim mpv nsxiv yazi micro
+# paru -S vicinae-bin throne-bin
+# i3flow: git clone https://github.com/piadi-su/i3flow.git && cd i3flow && sudo make install
+
+# Auto-tiling для более приятной раскладки окон
+exec_always --no-startup-id i3flow
+
+# 84 герц для моего монитора
+exec --no-startup-id xrandr --output HDMI-0 --mode 1920x1080_84.00
 
 # Отключить погас экрана
 exec_always --no-startup-id xset s off -dpms
 exec_always --no-startup-id xset s noblank
 
-exec --no-startup-id "blueman-applet > ~/.blueman.log 2>&1 &"
+# Автозапуск Throne (его "Start with system" не работает — i3 не обрабатывает
+# ~/.config/autostart/*.desktop, только явный exec ниже)
+exec --no-startup-id throne
+
+# Автозапуск фонового сервера Vicinae (сам launcher вызывается через toggle, см. ниже)
+exec --no-startup-id vicinae server
+bindsym $mod+d exec --no-startup-id vicinae toggle
 
 # Установка клавиши Mod (Mod4 = Клавиша Windows/Super)
 set $mod Mod4
@@ -22,15 +36,21 @@ floating_modifier $mod
 # Раскладка us, ru на alt+shift
 exec_after_restart --no-startup-id setxkbmap -layout us,ru -option grp:alt_shift_toggle
 
+# Снижение задержки репита клавиш (в том числе на Backspace)
+# xset r rate 200 40 - прописать один раз
+
 # ==============================================================================
 # 1. Запуск основных приложений
 # ==============================================================================
 
-# Терминал по умолчанию (Kitty - высокая производительность на GPU)
-bindcode $mod+36 exec kitty
+# Терминал по умолчанию
+bindcode $mod+36 exec alacritty
 
-# Быстрый запуск меню приложений (Rofi вместо устаревшего dmenu)
-bindsym $mod+d exec --no-startup-id rofi -show drun
+# Быстрый запуск меню приложений (Vicinae вместо Rofi)
+bindsym $mod+d exec --no-startup-id vicinae toggle
+
+# Файловый менеджер (Yazi в терминале)
+bindsym $mod+Shift+f exec --no-startup-id kitty -e yazi
 
 # Снимок всего экрана (PrtSc)
 bindsym Print exec --no-startup-id maim --format=png ~/Pictures/screenshot-$(date +%Y-%m-%d-%H%M%S).png
@@ -77,7 +97,7 @@ bindsym $mod+Shift+Right move right
 
 # ==============================================================================
 # 3. Управление разметкой (Layouts)
-# ==============================================================================V
+# ==============================================================================
 
 # Разделение окон по горизонтали / вертикали
 bindsym $mod+b split h
@@ -132,11 +152,6 @@ bindsym $mod+Shift+6 move container to workspace number $ws6
 # ==============================================================================
 # 5. Управление мультимедиа и системными функциями (С фиксом уведомлений)
 # ==============================================================================
-
-# Изменение громкости (с отправкой системного уведомления о текущем уровне)
-bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q set -USR1 5%+
-bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q set -USR1 5%-
-bindsym XF86AudioMute exec --no-startup-id amixer -q set -USR1 toggle
 
 # Управление яркостью экрана (если применимо к монитору/ноутбуку)
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
