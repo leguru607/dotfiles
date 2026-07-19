@@ -6,6 +6,12 @@
 # paru -S throne-bin
 # i3flow: git clone https://github.com/piadi-su/i3flow.git && cd i3flow && sudo make install
 
+# Ручная блокировка по хоткею
+bindsym $mod+Shift+x exec --no-startup-id i3lock-color -c 0a0a0a
+
+# Автоблокировка ПЕРЕД сном/suspend (через logind) — критично, чтобы не проснуться с разблокированным столом
+exec --no-startup-id xss-lock -- i3lock-color -c 0a0a0a
+
 # Auto-tiling для более приятной раскладки окон
 exec_always --no-startup-id i3flow
 
