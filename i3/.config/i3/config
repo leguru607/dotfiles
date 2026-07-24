@@ -2,15 +2,9 @@
 # i3wm Core Configuration - Tailored Minimalist Setup for TKL Keyboard
 # ==============================================================================
 
-# sudo pacman -S kitty rofi i3status dunst xorg-xset blueman xclip maim mpv nsxiv yazi micro
+# sudo pacman -S kitty rofi i3blocks dunst xorg-xset blueman xclip maim mpv nsxiv yazi micro jq ethtool iw
 # paru -S throne-bin
 # i3flow: git clone https://github.com/piadi-su/i3flow.git && cd i3flow && sudo make install
-
-# Ручная блокировка по хоткею
-bindsym $mod+Shift+x exec --no-startup-id i3lock-color -c 0a0a0a
-
-# Автоблокировка ПЕРЕД сном/suspend (через logind) — критично, чтобы не проснуться с разблокированным столом
-exec --no-startup-id xss-lock -- i3lock-color -c 0a0a0a
 
 # Auto-tiling для более приятной раскладки окон
 exec_always --no-startup-id i3flow
@@ -28,6 +22,9 @@ exec --no-startup-id "blueman-applet > ~/.blueman.log 2>&1 &"
 # Автозапуск Throne (его "Start with system" не работает — i3 не обрабатывает
 # ~/.config/autostart/*.desktop, только явный exec ниже)
 exec --no-startup-id throne
+
+# Автоблокировка экрана перед suspend/сном (logind hook)
+exec --no-startup-id xss-lock -- ~/.config/i3/scripts/lock.sh
 
 # Установка клавиши Mod (Mod4 = Клавиша Windows/Super)
 set $mod Mod4
@@ -74,6 +71,13 @@ bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow)
 
 # Убийство фокуса (закрыть текущее окно)
 bindsym $mod+Shift+q kill
+
+# Ручная блокировка экрана
+bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/lock.sh
+
+# Помодоро-таймер (в баре, без плавающего окна)
+bindsym $mod+p exec --no-startup-id ~/.config/i3/scripts/pomodoro.sh
+bindsym $mod+Shift+p exec --no-startup-id "pkill -f pomodoro.sh; rm -f /tmp/pomodoro_status"
 
 # ==============================================================================
 # 2. Навигация и перемещение окон (Адаптировано под TKL стрелки и HJKL)
@@ -218,7 +222,7 @@ client.background       #0a0a0a
 # ==============================================================================
 
 bar {
-        status_command i3status
+        status_command i3blocks
         position bottom
         colors {
                 background #101010
