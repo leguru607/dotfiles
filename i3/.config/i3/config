@@ -2,7 +2,7 @@
 # i3wm Core Configuration - Tailored Minimalist Setup for TKL Keyboard
 # ==============================================================================
 
-# sudo pacman -S kitty rofi i3blocks dunst xorg-xset blueman xclip maim mpv nsxiv yazi micro jq ethtool iw
+# sudo pacman -S kitty rofi i3status dunst xorg-xset blueman xclip maim mpv nsxiv yazi micro
 # paru -S throne-bin
 # i3flow: git clone https://github.com/piadi-su/i3flow.git && cd i3flow && sudo make install
 
@@ -24,7 +24,7 @@ exec --no-startup-id "blueman-applet > ~/.blueman.log 2>&1 &"
 exec --no-startup-id throne
 
 # Автоблокировка экрана перед suspend/сном (logind hook)
-exec --no-startup-id xss-lock -- ~/.config/i3/scripts/lock.sh
+exec --no-startup-id xss-lock -- i3lock -c 0a0a0a
 
 # Установка клавиши Mod (Mod4 = Клавиша Windows/Super)
 set $mod Mod4
@@ -73,35 +73,27 @@ bindsym $mod+Print exec --no-startup-id maim --window $(xdotool getactivewindow)
 bindsym $mod+Shift+q kill
 
 # Ручная блокировка экрана
-bindsym $mod+Shift+x exec --no-startup-id ~/.config/i3/scripts/lock.sh
-
-# Помодоро-таймер (в баре, без плавающего окна)
-bindsym $mod+p exec --no-startup-id ~/.config/i3/scripts/pomodoro.sh
-bindsym $mod+Shift+p exec --no-startup-id "pkill -f pomodoro.sh; rm -f /tmp/pomodoro_status"
+bindsym $mod+Shift+x exec --no-startup-id i3lock -c 0a0a0a
 
 # ==============================================================================
 # 2. Навигация и перемещение окон (Адаптировано под TKL стрелки и HJKL)
 # ==============================================================================
 
-# Изменение фокуса между окнами (Vim-style)
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-# Изменение фокуса между окнами (Физические стрелки на TKL)
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
-# Перемещение окон (Vim-style)
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
-# Перемещение окон (Физические стрелки на TKL)
 bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
@@ -111,25 +103,18 @@ bindsym $mod+Shift+Right move right
 # 3. Управление разметкой (Layouts)
 # ==============================================================================
 
-# Разделение окон по горизонтали / вертикали
 bindsym $mod+b split h
 bindsym $mod+v split v
 
-# Переключение режимов отображения контейнера
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
-# Полноэкранный режим (Ultimate Focus Mode)
 bindsym $mod+f fullscreen toggle
 
-# Переключение режима окна: плавающее / тайлинговое
 bindsym $mod+Shift+space floating toggle
-
-# Переключение фокуса между плавающим и тайлинговым окном
 bindsym $mod+space focus mode_toggle
 
-# Переход к родительскому / дочернему контейнеру
 bindsym $mod+a focus parent
 # bindsym $mod+c focus child # Раскомментировать при необходимости глубокой вложенности
 
@@ -162,7 +147,6 @@ bindsym $mod+Shift+6 move container to workspace number $ws6
 # 5. Управление мультимедиа и системными функциями
 # ==============================================================================
 
-# Громкость (Vicinae убран — снова через скрипт с уведомлением dunst)
 bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/i3/scripts/volume.sh down
 bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/scripts/volume.sh up
 bindsym XF86AudioMute        exec --no-startup-id ~/.config/i3/scripts/volume.sh mute
@@ -171,7 +155,6 @@ bindsym $mod+F2 exec --no-startup-id ~/.config/i3/scripts/volume.sh down
 bindsym $mod+F3 exec --no-startup-id ~/.config/i3/scripts/volume.sh mute
 bindsym $mod+F4 exec --no-startup-id ~/.config/i3/scripts/volume.sh up
 
-# Управление яркостью экрана (если применимо к монитору/ноутбуку)
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
 bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 10%-
 
@@ -222,7 +205,7 @@ client.background       #0a0a0a
 # ==============================================================================
 
 bar {
-        status_command i3blocks
+        status_command i3status
         position bottom
         colors {
                 background #101010
