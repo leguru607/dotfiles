@@ -9,8 +9,19 @@
 # Auto-tiling для более приятной раскладки окон
 exec_always --no-startup-id i3flow
 
-# 84 герц для моего монитора
-exec --no-startup-id xrandr --output HDMI-0 --mode 1920x1080_84.00
+# Dual monitor layout
+exec_always --no-startup-id xrandr \
+    --output DP-0 \
+        --primary \
+        --mode 2560x1440 \
+        --rate 260 \
+        --pos 0x1080 \
+        --rotate normal \
+    --output HDMI-0 \
+        --mode 1920x1080 \
+        --rate 100 \
+        --pos 320x0 \
+        --rotate inverted
 
 # Отключить погас экрана
 exec_always --no-startup-id xset s off -dpms
@@ -38,8 +49,12 @@ floating_modifier $mod
 # Раскладка us, ru на alt+shift
 exec_after_restart --no-startup-id setxkbmap -layout us,ru -option grp:alt_shift_toggle
 
+# Music notify
+exec --no-startup-id ~/.local/bin/music-notify
+exec --no-startup-id dunst
+
 # Снижение задержки репита клавиш (в том числе на Backspace)
-# xset r rate 200 40 - прописать один раз
+exec --no-startup-id xset r rate 200 40
 
 # ==============================================================================
 # 1. Запуск основных приложений
@@ -89,6 +104,9 @@ bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
+bindsym $mod+Ctrl+Up focus output up
+bindsym $mod+Ctrl+Down focus output down
+
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
@@ -98,6 +116,9 @@ bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
+
+bindsym $mod+Ctrl+Shift+Up move container to output up
+bindsym $mod+Ctrl+Shift+Down move container to output down
 
 # ==============================================================================
 # 3. Управление разметкой (Layouts)
@@ -128,6 +149,7 @@ set $ws3 "3"
 set $ws4 "4"
 set $ws5 "5"
 set $ws6 "6"
+set $ws7 "7"
 
 bindsym $mod+1 workspace number $ws1
 bindsym $mod+2 workspace number $ws2
@@ -135,6 +157,7 @@ bindsym $mod+3 workspace number $ws3
 bindsym $mod+4 workspace number $ws4
 bindsym $mod+5 workspace number $ws5
 bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
 
 bindsym $mod+Shift+1 move container to workspace number $ws1
 bindsym $mod+Shift+2 move container to workspace number $ws2
@@ -143,17 +166,27 @@ bindsym $mod+Shift+4 move container to workspace number $ws4
 bindsym $mod+Shift+5 move container to workspace number $ws5
 bindsym $mod+Shift+6 move container to workspace number $ws6
 
+# TCL — основной рабочий монитор
+workspace 1 output DP-0
+workspace 2 output DP-0
+workspace 3 output DP-0
+workspace 4 output DP-0
+workspace 5 output DP-0
+
+# Hisense — второй монитор
+workspace 6 output HDMI-0
+
 # ==============================================================================
 # 5. Управление мультимедиа и системными функциями
 # ==============================================================================
 
-bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/i3/scripts/volume.sh down
-bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/scripts/volume.sh up
-bindsym XF86AudioMute        exec --no-startup-id ~/.config/i3/scripts/volume.sh mute
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/dotfiles/i3/.config/i3/scripts/volume.sh down
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/dotfiles/i3/.config/i3/scripts/volume.sh up
+bindsym XF86AudioMute        exec --no-startup-id ~/dotfiles/i3/.config/i3/scripts/volume.sh  mute
 
-bindsym $mod+F2 exec --no-startup-id ~/.config/i3/scripts/volume.sh down
-bindsym $mod+F3 exec --no-startup-id ~/.config/i3/scripts/volume.sh mute
-bindsym $mod+F4 exec --no-startup-id ~/.config/i3/scripts/volume.sh up
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
 
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
 bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 10%-
@@ -164,7 +197,7 @@ bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 10%-
 
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Вы действительно хотите выйти из i3?' -B 'Да, завершить сессию' 'i3-msg exit'"
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Do you really want to exit i3?' -B 'Yes, exit session' 'i3-msg exit'"
 
 # ==============================================================================
 # 7. Режим изменения размера окон (Resize Mode)
@@ -205,16 +238,18 @@ client.background       #0a0a0a
 # ==============================================================================
 
 bar {
-        status_command i3status
-        position bottom
-        colors {
-                background #101010
-                statusline #ffffff
-                separator  #333333
+	font pango:Noto Sans,Font Awesome 7 Free 10
+    status_command i3status-rs ~/.config/i3status-rust/config.toml
+    position bottom
 
-                focused_workspace  #222222  #1a1a1a  #ffffff
-                active_workspace   #151515  #151515  #888888
-                inactive_workspace #101010  #101010  #555555
-                urgent_workspace   #331111  #331111  #ffffff
-        }
+    colors {
+        background #101010
+        statusline #ffffff
+        separator #333333
+
+        focused_workspace  #222222 #1a1a1a #ffffff
+        active_workspace   #151515 #151515 #888888
+        inactive_workspace #101010 #101010 #555555
+        urgent_workspace   #331111 #331111 #ffffff
+    }
 }
